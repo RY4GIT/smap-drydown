@@ -265,10 +265,12 @@ class DrydownModel:
         # Fit tau exponential model
         if self.run_tau_exp_model:
             try:
-                popt, pcov, y_opt, r_squared, aic, bic, _ = self.fit_tau_exp_model(
-                    event
+                popt, pcov, y_opt, r_squared, aic, aicc, bic, _ = (
+                    self.fit_tau_exp_model(event)
                 )
-                event.add_attributes("tau_exp", popt, pcov, y_opt, r_squared, aic, bic)
+                event.add_attributes(
+                    "tau_exp", popt, pcov, y_opt, r_squared, aic, aicc, bic, ss_res, ss_tot
+                )
             except Exception as e:
                 log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
                 return None
@@ -277,7 +279,9 @@ class DrydownModel:
         # Fit tau exponential model
         if self.run_exp_model:
             try:
-                popt, pcov, y_opt, r_squared, aic, bic, _ = self.fit_exp_model(event)
+                popt, pcov, y_opt, r_squared, aic, aicc, bic, ss_res, ss_tot, _ = self.fit_exp_model(
+                    event
+                )
 
                 if self.is_stage1ET_active:
                     est_theta_star = popt[2]
@@ -292,7 +296,10 @@ class DrydownModel:
                     y_opt,
                     r_squared,
                     aic,
+                    aicc,
                     bic,
+                    ss_res,
+                    ss_tot, 
                     np.nan,
                     est_theta_star,
                     est_theta_w,
@@ -305,8 +312,8 @@ class DrydownModel:
         # Fit q model
         if self.run_q_model:
             try:
-                popt, pcov, y_opt, r_squared, aic, bic, p_value = self.fit_q_model(
-                    event
+                popt, pcov, y_opt, r_squared, aic, aicc, bic,ss_res, ss_tot, p_value = (
+                    self.fit_q_model(event)
                 )
 
                 if self.is_stage1ET_active:
@@ -322,7 +329,10 @@ class DrydownModel:
                     y_opt,
                     r_squared,
                     aic,
+                    aicc,
                     bic,
+                    ss_res, 
+                    ss_tot,
                     p_value,
                     est_theta_star,
                     est_theta_w,
@@ -372,7 +382,7 @@ class DrydownModel:
             y_opt = model(event.x, *popt)
 
             # Calculate the residuals
-            r_squared, aic, bic, p_value = self.calc_performance_metrics(
+            r_squared, aic, aicc, bic, ss_res, ss_tot, p_value = self.calc_performance_metrics(
                 y_obs=event.y,
                 y_pred=y_opt,
                 popt=popt,
@@ -380,7 +390,7 @@ class DrydownModel:
                 param_names=param_names,
             )
 
-            return popt, pcov, y_opt, r_squared, aic, bic, p_value
+            return popt, pcov, y_opt, r_squared, aic, aicc, bic, ss_res, ss_tot, p_value
 
         except Exception as e:
             log.debug(f"Exception raised in the thread {self.thread_name}: {e}")
@@ -407,13 +417,15 @@ class DrydownModel:
         # AIC and BIC
         try:
             aic = n * np.log(ss_res / n) + 2 * k
+            aicc = aic + (2 * k * (k + 1)) / (n - k - 1)
         except:
             aic = np.nan
+            aicc = np.nan
 
         try:
             bic = n * np.log(ss_res / n) + k * np.log(n)
         except:
-            aic = np.nan
+            bic = np.nan
         ############################
 
         if "q" in param_names:
@@ -437,7 +449,7 @@ class DrydownModel:
         else:
             p_value = np.nan
 
-        return r_squared, aic, bic, p_value
+        return r_squared, aic, aicc, bic, ss_res, ss_tot, p_value
 
     def fit_tau_exp_model(self, event):
         """Fits an exponential model to the given event data and returns the fitted parameters.
@@ -780,7 +792,10 @@ class DrydownModel:
                             "tauexp_cov_theta_w_tau": event.tau_exp["cov_theta_w_tau"],
                             "tauexp_r_squared": event.tau_exp["r_squared"],
                             "tauexp_aic": event.tau_exp["aic"],
+                            "tauexp_aicc": event.tau_exp["aicc"],
                             "tauexp_bic": event.tau_exp["bic"],
+                            "tauexp_ss_res": event.tau_exp["ss_res"],
+                            "tauexp_ss_tot": event.tau_exp["ss_tot"],
                             "tauexp_y_opt": event.tau_exp["y_opt"],
                         }
                     )
@@ -804,7 +819,10 @@ class DrydownModel:
                             ],
                             "exp_r_squared": event.exp["r_squared"],
                             "exp_aic": event.exp["aic"],
+                            "exp_aicc": event.exp["aicc"],
                             "exp_bic": event.exp["bic"],
+                            "exp_ss_res": event.exp["ss_res"],
+                            "exp_ss_tot": event.exp["ss_tot"],
                             "exp_y_opt": event.exp["y_opt"],
                         }
                     )
@@ -831,7 +849,10 @@ class DrydownModel:
                             ],
                             "q_r_squared": event.q["r_squared"],
                             "q_aic": event.q["aic"],
+                            "q_aicc": event.q["aicc"],
                             "q_bic": event.q["bic"],
+                            "q_ss_res": event.q["ss_res"],
+                            "q_ss_tot": event.q["ss_tot"],
                             "q_eq_1_p": event.q["q_eq_1_p"],
                             "q_y_opt": event.q["y_opt"],
                         }

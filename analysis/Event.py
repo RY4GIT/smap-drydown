@@ -46,7 +46,10 @@ class Event:
         y_opt=[],
         r_squared=np.nan,
         aic=np.nan,
+        aicc=np.nan,
         bic=np.nan,
+        ss_res=np.nan,
+        ss_tot=np.nan,
         p_value=np.nan,
         est_theta_star=np.nan,
         est_theta_w=np.nan,
@@ -83,7 +86,10 @@ class Event:
                 "y_opt": y_opt.tolist(),
                 "r_squared": r_squared,
                 "aic": aic,
+                "aicc": aicc,
                 "bic": bic,
+                "ss_res": ss_res,
+                "ss_tot": ss_tot
             }
 
         if model_type == "exp":
@@ -130,7 +136,10 @@ class Event:
                 "y_opt": y_opt.tolist(),
                 "r_squared": r_squared,
                 "aic": aic,
+                "aicc": aicc,
                 "bic": bic,
+                "ss_res": ss_res,
+                "ss_tot": ss_tot,
             }
 
         if model_type == "q":
@@ -189,7 +198,10 @@ class Event:
                 "y_opt": y_opt.tolist(),
                 "r_squared": r_squared,
                 "aic": aic,
+                "aicc": aicc,
                 "bic": bic,
+                "ss_res": ss_res,
+                "ss_tot": ss_tot,
                 "q_eq_1_p": p_value,
             }
 
