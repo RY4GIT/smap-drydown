@@ -50,7 +50,8 @@ z_mm = 50  # Soil thickness
 
 # Data dir
 user_name = getpass.getuser()
-data_dir = rf"/home/{user_name}/waves/projects/smap-drydown/data"
+# data_dir = rf"/home/{user_name}/waves/projects/smap-drydown/data"
+data_dir = r"G:\Shared drives\Ryoko and Hilary\smap-drydown\data"
 datarods_dir = "datarods"
 anc_dir = "SMAP_L1_L3_ANC_STATIC"
 anc_file = "anc_info.csv"
@@ -62,7 +63,8 @@ ai_file = "AridityIndex_from_datarods.csv"
 coord_info_file = "coord_info.csv"
 
 ################ CHANGE HERE FOR PLOT VISUAL CONFIG #########################
-note_dir = f"/home/{user_name}/smap-drydown/notebooks"
+# note_dir = f"/home/{user_name}/smap-drydown/notebooks"
+note_dir = r"C:\Users\flipl\dev\smap-drydown\notebooks"
 ## Define parameters
 with open(os.path.join(note_dir, "fig_veg_colors_lim.json"), "r") as file:
     vegetation_color_dict = json.load(file)
@@ -73,8 +75,9 @@ with open(os.path.join(note_dir, "fig_variable_labels.json"), "r") as file:
 
 
 ################ Read the model output (results) ################
-output_dir = rf"/home/{user_name}/waves/projects/smap-drydown/output"
-results_file = rf"all_results.csv"
+# output_dir = rf"/home/{user_name}/waves/projects/smap-drydown/output"
+output_dir = r"G:\Shared drives\Ryoko and Hilary\smap-drydown\output"
+results_file = rf"all_results_copy.csv"
 _df = pd.read_csv(os.path.join(output_dir, dir_name, results_file))
 _df["year"] = pd.to_datetime(_df["event_start"]).dt.year
 print("Loaded results file")
@@ -258,8 +261,8 @@ df["event_ndays"] = df.apply(count_nonnan_sm, axis=1)
 # df["tauexp_aicc"] = df.apply(lambda row: calculate_aicc(row, 4, "tauexp_aic"), axis=1)
 # df["exp_aicc"] = df.apply(lambda row: calculate_aicc(row, 3, "tauexp_aic"), axis=1)
 # df["q_aicc"] = df.apply(lambda row: calculate_aicc(row, 4, "q_aic"), axis=1)
-df = df.assign(diff_aicc_q_tauexp=df["q_aicc"] - df["tauexp_aicc"])
-df = df.assign(diff_aicc_q_exp=df["q_aicc"] - df["exp_aicc"])
+# df = df.assign(diff_aicc_q_tauexp=df["q_aicc"] - df["tauexp_aicc"])
+# df = df.assign(diff_aicc_q_exp=df["q_aicc"] - df["exp_aicc"])
 # %%
 output_path = os.path.join(output_dir, dir_name, "all_results_processed.csv")
 df.to_csv(output_path)
