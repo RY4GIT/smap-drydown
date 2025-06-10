@@ -123,9 +123,7 @@ first_I = df["ai_bins"].cat.categories[0]
 new_I = pd.Interval(0, first_I.right)
 df["ai_bins"] = df["ai_bins"].cat.rename_categories({first_I: new_I})
 
-# %%
-print(fig_dir)
-len(df)
+
 # %% ###################################################
 # Exclude model fits failure
 def count_median_number_of_events_perGrid(df):
@@ -473,6 +471,34 @@ if save:
 # Print statistical summaries for exp model
 print_global_stats(df_filt_q_and_exp, "diff_aic_q_exp", "nonlinear - linear")
 
+# %%
+# Setup common variables
+var_key_exp = "diff_R2_exp"
+
+norm_exp = Normalize(
+    vmin=var_dict[var_key_exp]["lim"][0], vmax=var_dict[var_key_exp]["lim"][1]
+)
+
+# Plot and save maps for exp model
+plt.rcParams.update({"font.size": 12})
+fig_map_aic, ax = plt.subplots(
+    figsize=(9, 9), subplot_kw={"projection": ccrs.Robinson()}
+)
+plot_map(
+    ax=ax,
+    df=df_filt_q_and_exp,
+    coord_info=coord_info,
+    cmap="RdBu",
+    norm=norm_exp,
+    var_item=var_dict[var_key_exp],
+    stat_type=stat_type,
+    bar_label="$R^2$",
+)
+if save:
+    save_figure(fig_map_aic, fig_dir, f"R2_map_{stat_type}_and_exp", "png", 900)
+
+# Print statistical summaries for exp model
+print_global_stats(df_filt_q_and_exp, "diff_R2_q_exp", "nonlinear - linear")
 
 # %% Map of q
 plt.rcParams.update({"font.size": 12})
